@@ -1,12 +1,12 @@
 package program;
 
-import models.Answer;
-import models.Question;
+import models.*;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import utils.HibernateSessionUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,13 +15,42 @@ public class Main {
 //        RoleEditor.Start();
 //        addQuestion();
 //        showQuestions();
-        questionsAndAnswersTest();
+//        questionsAndAnswersTest();
+
+//        addTestUserAndRole();
+//        createCategory();
+        try (Session context = HibernateSessionUtils.getSessionFactory().openSession()) {
+
+        }
+    }
+
+    private static void createCategory() {
+        try (Session context = HibernateSessionUtils.getSessionFactory().openSession()) {
+            Category c = new Category("Phones", "1.jpg", new Date(), false);
+            context.save(c);
+        }
+    }
+
+    private static void addTestUserAndRole() {
+        try (Session context = HibernateSessionUtils.getSessionFactory().openSession()) {
+            Transaction tx = context.beginTransaction();
+            User user = new User("Ivan", "Bober", "bober@gmail.con", "+380 68 823 32 23", "123456");
+            context.save(user);
+
+            var role = context.get(Role.class, 1);
+            var ur = new UserRole();
+
+            ur.setRole(role);
+            ur.setUser(user);
+
+            context.save(ur);
+            tx.commit();
+        }
     }
 
     public static void questionsAndAnswersTest() {
-        try {
+        try (Session context = HibernateSessionUtils.getSessionFactory().openSession()) {
             Scanner in = new Scanner(System.in);
-            Session context = HibernateSessionUtils.getSessionFactory().openSession();
             Transaction tx = context.beginTransaction();
             Query query = context.createQuery("FROM Question");
             List<Question> listQuestion = query.list();
